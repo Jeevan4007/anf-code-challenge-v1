@@ -1,0 +1,21 @@
+<div data-sly-test="${wcmmode.edit}" data-emptytext="News Feed" class="cq-placeholder"></div>
+<sly data-sly-use.model="com.anf.core.models.NewsFeedModel" data-sly-list.feed="${model.newsFeedList}">
+    <sly >
+        <div class="newsfeed-header">
+            <h1 class="newsfeed-title" data-sly-test="${feed.title}"> ${feed.title} </h1>
+            <div class="newsfeed-author-date" data-sly-test="${feed.date || feed.author}">
+                <span> ${feed.date} || ${feed.author}</span>
+            </div>
+
+            <div class="newsfeed-description" data-sly-test="${feed.description}">
+                <p> ${feed.description} </p>
+            </div>
+
+        </div>
+        <div class="newsfeed-image" data-sly-test="${feed.url || feed.urlImage || feed.title}">
+            <a href="${feed.url}">
+                <img src="${feed.urlImage}" width="300" height="150" alt="${feed.title}" />
+            </a>
+        </div>
+    </sly>
+</sly>
