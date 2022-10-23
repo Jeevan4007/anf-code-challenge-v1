@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:OsgiConfig"
+    queryPageRoot="/content/anf-code-challenge/us/en"
+    countryDAMJson="/content/dam/anf-code-challenge/exercise-1/countries.json"
+    ageLimitPath="/etc/age"
+    anfFormPath="/var/anf-code-challenge"/>

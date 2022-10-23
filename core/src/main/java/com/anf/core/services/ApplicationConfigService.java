@@ -6,4 +6,10 @@ package com.anf.core.services;
 public interface ApplicationConfigService {
 
     String getQueryPageRoot();
+    
+    String getCountryDAMJson();
+    
+    String getAgeLimitPath();
+    
+    String getAnfFormPath();
 }

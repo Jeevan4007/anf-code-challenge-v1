@@ -45,4 +45,19 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
         return config.queryPageRoot();
     }
 
+    @Override
+    public String getCountryDAMJson() {
+        return config.countryDAMJson();
+    }
+
+    @Override
+    public String getAgeLimitPath() {
+        return config.ageLimitPath();
+    }
+
+    @Override
+    public String getAnfFormPath() {
+        return config.anfFormPath();
+    }
+
 }

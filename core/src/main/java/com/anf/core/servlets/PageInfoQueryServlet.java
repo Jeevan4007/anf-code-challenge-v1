@@ -12,8 +12,6 @@ import javax.servlet.ServletException;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.apache.sling.servlets.annotations.SlingServletResourceTypes;
@@ -23,9 +21,7 @@ import org.osgi.service.component.propertytypes.ServiceDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.anf.core.listeners.PageEventHandler;
 import com.anf.core.services.ApplicationConfigService;
-import com.anf.core.services.ResourceResolverService;
 import com.day.cq.search.PredicateGroup;
 import com.day.cq.search.Query;
 import com.day.cq.search.QueryBuilder;
@@ -50,14 +46,11 @@ public class PageInfoQueryServlet extends SlingSafeMethodsServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private transient Logger logger = LoggerFactory.getLogger(PageEventHandler.class);
+    private transient Logger logger = LoggerFactory.getLogger(PageInfoQueryServlet.class);
 
     @Reference
     transient QueryBuilder queryBuilder;
 
-    @Reference
-    transient ResourceResolverService resourceResolverService;
-    
     @Reference
     transient ApplicationConfigService application;
 
@@ -65,9 +58,9 @@ public class PageInfoQueryServlet extends SlingSafeMethodsServlet {
     protected void doGet(final SlingHttpServletRequest req, final SlingHttpServletResponse resp)
             throws ServletException, IOException {
 
-        try (ResourceResolver resourceResolver = resourceResolverService.getServiceResourceResolver()) {
+        try {
 
-            final Session session = resourceResolver.adaptTo(Session.class);
+            final Session session = req.getResourceResolver().adaptTo(Session.class);
 
             HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put("path", application.getQueryPageRoot());
@@ -88,7 +81,7 @@ public class PageInfoQueryServlet extends SlingSafeMethodsServlet {
             Gson gson = new Gson();
             resp.getWriter().println(gson.toJson(pageList));
 
-        } catch (LoginException | RepositoryException | IOException e) {
+        } catch (RepositoryException | IOException e) {
             logger.error("Exception in Query Builder API Execution : {}", e.getMessage());
         }
 
