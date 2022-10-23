@@ -43,7 +43,7 @@ public class PageEventHandler implements EventHandler {
     ResourceResolverService resourceResolverService;
 
     public void handleEvent(final Event event) {
-        try (ResourceResolver resourceResolver = resourceResolverService.getResourceResolver()) {
+        try (ResourceResolver resourceResolver = resourceResolverService.getServiceResourceResolver()) {
             Iterator<PageModification> modifications = PageEvent.fromEvent(event).getModifications();
             while (modifications.hasNext()) {
                 final PageModification pageModification = modifications.next();
