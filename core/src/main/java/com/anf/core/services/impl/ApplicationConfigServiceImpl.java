@@ -24,7 +24,7 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     private ApplicationServiceConfiguration config;
 
     /**
-     * Activate SalesforceDealerConfigServiceImpl.
+     * Activate ApplicationConfigServiceImpl.
      *
      * @param config
      *            application default configs value

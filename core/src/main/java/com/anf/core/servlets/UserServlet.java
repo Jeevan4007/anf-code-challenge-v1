@@ -1,46 +1,81 @@
-/*
- *  Copyright 2015 Adobe Systems Incorporated
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
 package com.anf.core.servlets;
 
-import com.anf.core.services.ContentService;
+import java.io.IOException;
+import java.util.Objects;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.apache.sling.servlets.annotations.SlingServletPaths;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import java.io.IOException;
+import com.anf.core.services.ApplicationConfigService;
+import com.anf.core.services.ContentService;
+import com.anf.core.services.ResourceResolverService;
 
 @Component(service = { Servlet.class })
-@SlingServletPaths(
-        value = "/bin/saveUserDetails"
-)
+@SlingServletPaths(value = "/bin/saveUserDetails")
 public class UserServlet extends SlingSafeMethodsServlet {
 
     private static final long serialVersionUID = 1L;
 
+    private transient Logger logger = LoggerFactory.getLogger(UserServlet.class);
+
     @Reference
-    private ContentService contentService;
+    transient ApplicationConfigService application;
+
+    @Reference
+    transient ContentService contentService;
+
+    @Reference
+    transient ResourceResolverService resourceResolverService;
 
     @Override
-    protected void doGet(final SlingHttpServletRequest req,
-            final SlingHttpServletResponse resp) throws ServletException, IOException {
-        // Make use of ContentService to write the business logic
+    protected void doGet(final SlingHttpServletRequest req, final SlingHttpServletResponse resp)
+            throws ServletException, IOException {
+        try (ResourceResolver resourceResolver = resourceResolverService.getServiceResourceResolver()) {
+
+            int currentAge = Integer.parseInt(req.getParameter("age"));
+            String firstName = req.getParameter("firstName");
+            String lastName = req.getParameter("lastName");
+            String country = req.getParameter("country");
+
+            // Getting resource from configured path (/etc/age)
+            Resource resource = resourceResolver.getResource(application.getAgeLimitPath());
+
+            assert resource != null;
+            ValueMap valueMap = resource.adaptTo(ValueMap.class);
+
+            // Max and Min age
+            assert valueMap != null;
+            int maxAge = Integer.parseInt(Objects.requireNonNull(valueMap.get("maxAge", String.class)));
+            int minAge = Integer.parseInt(Objects.requireNonNull(valueMap.get("minAge", String.class)));
+
+            // Sending response after validation
+            resp.setContentType("text/plain");
+            resp.setCharacterEncoding("UTF-8");
+            if (StringUtils.isNotBlank(firstName) && StringUtils.isNotBlank(lastName) && StringUtils.isNotBlank(country)
+                    && currentAge >= minAge && currentAge <= maxAge) {
+                contentService.commitUserDetails(firstName, lastName, country, Integer.toString(currentAge), resourceResolver);
+                resp.getWriter().write("true");
+            } else {
+                resp.getWriter().write("false");
+            }
+
+        } catch (LoginException e) {
+            logger.error("Exception in Form submit Execution : {}", e.getMessage());
+        }
+
     }
 }

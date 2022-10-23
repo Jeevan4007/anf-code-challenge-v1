@@ -15,7 +15,7 @@ public @interface ApplicationServiceConfiguration {
     @AttributeDefinition(name = "Age Validation Limits", description = "Enter the age validation limit Node Path")
     String ageLimitPath() default "/etc/age";
     
-    @AttributeDefinition(name = "Age Validation Limits", description = "Enter the age validation limit Node Path")
+    @AttributeDefinition(name = "ANF Form Store Location", description = "Enter the ANF Form Store Location")
     String anfFormPath() default "/var/anf-code-challenge";
 
 }

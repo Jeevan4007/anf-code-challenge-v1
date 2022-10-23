@@ -45,6 +45,7 @@ module.exports = {
     {
       ...libsBaseConfig,
       name: 'clientlib-dependencies',
+      embed: ['cq.jquery'],
       categories: ['anf-code-challenge.dependencies'],
       assets: {
         // Copy entrypoint scripts and stylesheets into the respective ClientLib
